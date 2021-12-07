@@ -1,6 +1,6 @@
-import React, { FC, useEffect, useCallback } from "react";
+import React, { FC, useEffect } from "react";
 import { observer } from "mobx-react-lite";
-import { useTodoStore, Todo } from "../../../models/Todo";
+import { useTodoStore } from "../../../models/Todo";
 import { TodoList } from "./TodoList";
 import { RequestState } from "../../../constants";
 
@@ -13,11 +13,6 @@ const TodoListController: FC = () => {
     }
   }, [store]);
 
-  const onTodoDelete = useCallback(
-    (todo: Todo) => store.removeTodo(todo.id),
-    [store]
-  );
-
   if (store.state === RequestState.LOADING) {
     return <div data-testid="loader">LOADING...</div>;
   }
@@ -26,7 +21,9 @@ const TodoListController: FC = () => {
     return <div data-testid="error">ERROR :(</div>;
   }
 
-  return <TodoList onTodoDelete={onTodoDelete} todoValues={store.todoValues} />;
+  return (
+    <TodoList onTodoDelete={store.removeTodo} todoValues={store.todoValues} />
+  );
 };
 
 export default observer(TodoListController);

@@ -4,12 +4,12 @@ import type { Todo } from "../models/Todo";
 
 export type TodoItemProps = {
   todo: Todo;
-  onDelete: (todo: Todo) => void;
+  onDelete: (todoId: string) => void;
 };
 
 const TodoItem: FC<TodoItemProps> = ({ todo, onDelete }) => {
   const handleDeleteClick = useCallback(() => {
-    onDelete(todo);
+    onDelete(todo.id);
   }, [onDelete, todo]);
 
   const handleTodoToggle = useCallback(() => {

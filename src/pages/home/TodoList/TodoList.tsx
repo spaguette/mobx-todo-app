@@ -4,7 +4,7 @@ import type { Todo } from "../../../models/Todo";
 
 export type TodoListProps = {
   todoValues: Todo[];
-  onTodoDelete: (todo: Todo) => void;
+  onTodoDelete: (todoId: string) => void;
 };
 
 export const TodoList: FC<TodoListProps> = ({ todoValues, onTodoDelete }) => (
