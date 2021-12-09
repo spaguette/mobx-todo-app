@@ -3,7 +3,7 @@ import TodoItem from "../../../components/TodoItem";
 import type { Todo } from "../../../models/Todo";
 
 export type TodoListProps = {
-  todoValues: Todo[];
+  todoValues: readonly Todo[];
   onTodoDelete: (todoId: string) => void;
 };
 

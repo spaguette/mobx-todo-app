@@ -41,6 +41,7 @@ describe("TodoStore", () => {
             "done": false,
             "id": "FAKE_ID",
             "text": "Test 1",
+            "toggle": [Function],
           },
         ],
       ]
@@ -54,6 +55,7 @@ describe("TodoStore", () => {
             "done": false,
             "id": "1",
             "text": "Test 1",
+            "toggle": [Function],
           },
         ],
       ]
@@ -75,6 +77,7 @@ describe("TodoStore", () => {
             "done": false,
             "id": "1",
             "text": "Test 1",
+            "toggle": [Function],
           },
         ],
       ]
@@ -109,6 +112,7 @@ describe("TodoStore", () => {
             "done": true,
             "id": "1",
             "text": "Test 1",
+            "toggle": [Function],
           },
         ],
       ]

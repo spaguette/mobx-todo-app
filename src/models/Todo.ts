@@ -1,8 +1,16 @@
 import { createContext, useContext } from "react";
-import { makeAutoObservable, runInAction } from "mobx";
+import {
+  flow,
+  observable,
+  values,
+  set,
+  remove,
+  makeAutoObservable,
+} from "mobx";
 import { nanoid } from "nanoid";
 import { TodoAPI } from "../api/todos";
 import { RequestState } from "../constants";
+import { toGenerator } from "../utils/toGenerator";
 
 const todoApi = new TodoAPI();
 
@@ -24,71 +32,65 @@ export class Todo implements ITodoData {
     this.done = done;
   }
 
-  async toggle() {
+  toggle = flow(function* (this: Todo) {
     this.done = !this.done;
     try {
-      await todoApi.put(this);
+      yield todoApi.put(this);
     } catch (e) {
       console.error(e);
     }
-  }
+  });
 }
 
 export class TodoStore {
-  todos = new Map<string, Todo>();
+  todos = observable.map<string, Todo>();
   state = RequestState.IDLE;
 
   constructor() {
-    makeAutoObservable(this);
+    makeAutoObservable(this, {}, { autoBind: true });
   }
 
   get todoValues() {
-    return [...this.todos.values()];
+    return values(this.todos);
   }
 
-  async addTodo(text: string) {
+  addTodo = flow(function* (this: TodoStore, text: string) {
     const id = nanoid();
     // Optimistically create and add a new todo
     const newTodo = new Todo({ id, text });
-    this.todos.set(id, newTodo);
+    set(this.todos, id, newTodo);
     try {
-      const serverTodo = await todoApi.add(newTodo);
+      const serverTodo = yield* toGenerator(todoApi.add(newTodo));
 
-      runInAction(() => {
-        // After the server created the new todo, exchange the optimistically created one
-        // with the server Todo
-        this.todos.delete(newTodo.id);
-        this.todos.set(serverTodo.id, new Todo({ ...serverTodo, text }));
-      });
+      // After the server created the new todo, exchange the optimistically created one
+      // with the server Todo
+      remove(this.todos, newTodo.id);
+      set(this.todos, serverTodo.id, new Todo({ ...serverTodo, text }));
     } catch (e) {
       console.error(e);
     }
-  }
+  });
 
-  async removeTodo(todoId: string) {
-    this.todos.delete(todoId);
+  removeTodo = flow(function* (this: TodoStore, todoId: string) {
+    remove(this.todos, todoId);
     try {
-      await todoApi.delete(todoId);
+      yield todoApi.delete(todoId);
     } catch (e) {
       console.error(e);
     }
-  }
+  });
 
-  async fetchTodos() {
+  fetchTodos = flow(function* (this: TodoStore) {
     this.state = RequestState.LOADING;
     try {
-      const todosArr = await todoApi.fetchAll();
-      runInAction(() => {
-        todosArr.forEach((todo) => this.todos.set(todo.id, new Todo(todo)));
-        this.state = RequestState.SUCCESS;
-      });
+      const todosArr = yield* toGenerator(todoApi.fetchAll());
+      todosArr.forEach((todo) => set(this.todos, todo.id, new Todo(todo)));
+      this.state = RequestState.SUCCESS;
     } catch (e) {
       console.error(e);
-      runInAction(() => {
-        this.state = RequestState.ERROR;
-      });
+      this.state = RequestState.ERROR;
     }
-  }
+  });
 }
 
 export const todoStore = new TodoStore();
