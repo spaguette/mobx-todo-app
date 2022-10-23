@@ -1,5 +1,5 @@
 import fetchMock from "jest-fetch-mock";
-import { render, screen, waitFor } from "../../../utils/testUtils";
+import { render, screen } from "../../../utils/testUtils";
 import { TodoListController } from ".";
 
 fetchMock.enableMocks();
@@ -18,24 +18,20 @@ describe("pages/home/TodoList/TodoListController", () => {
   test("renders loader when fetching has started", async () => {
     fetchMock.mockResponseOnce(JSON.stringify([mockTodo]));
     render(<TodoListController />);
-    expect(screen.queryByTestId("loader")).toBeTruthy();
+    expect(screen.getByTestId("loader")).toBeTruthy();
   });
 
   test("renders error when fetching fails", async () => {
     fetchMock.mockResponseOnce(JSON.stringify("test error"), { status: 500 });
 
     render(<TodoListController />);
-    await waitFor(() =>
-      expect(screen.getByTestId("error")).toBeInTheDocument()
-    );
+    await screen.findByTestId("error");
   });
 
   test("renders TodoList when fetching succeeds", async () => {
     fetchMock.mockResponseOnce(JSON.stringify([mockTodo]));
 
-    const wrapper = render(<TodoListController />);
-    await waitFor(() =>
-      expect(wrapper.getByTestId("todo-list")).toBeInTheDocument()
-    );
+    render(<TodoListController />);
+    await screen.findByTestId("todo-list");
   });
 });
