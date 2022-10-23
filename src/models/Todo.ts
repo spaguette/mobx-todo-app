@@ -45,9 +45,10 @@ export class Todo implements ITodoData {
 export class TodoStore {
   todos = observable.map<string, Todo>();
   state = RequestState.IDLE;
+  abortController?: AbortController;
 
   constructor() {
-    makeAutoObservable(this, {}, { autoBind: true });
+    makeAutoObservable(this, { abortController: false }, { autoBind: true });
   }
 
   get todoValues() {
@@ -86,7 +87,10 @@ export class TodoStore {
     }
     this.state = RequestState.LOADING;
     try {
-      const todosArr = yield* toGenerator(todoApi.fetchAll());
+      this.abortController = new AbortController();
+      const todosArr = yield* toGenerator(
+        todoApi.fetchAll(this.abortController.signal)
+      );
       todosArr.forEach((todo) => set(this.todos, todo.id, new Todo(todo)));
       this.state = RequestState.SUCCESS;
     } catch (e) {
@@ -96,6 +100,7 @@ export class TodoStore {
   });
 
   cancelTodosFetch() {
+    this.abortController?.abort();
     this.state = RequestState.CANCELLED;
   }
 }

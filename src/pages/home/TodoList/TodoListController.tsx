@@ -3,19 +3,14 @@ import { observer } from "mobx-react-lite";
 import { useTodoStore } from "../../../models/Todo";
 import TodoList from "./TodoList";
 import { RequestState } from "../../../constants";
-import { isFlowCancellationError } from "mobx";
+import { withSafeCancel } from "../../../utils/withSafeCancel";
 
 const TodoListController: FC = () => {
   const store = useTodoStore();
   const { state, todoValues, removeTodo, fetchTodos, cancelTodosFetch } = store;
 
   useEffect(() => {
-    const todosFlow = fetchTodos();
-    todosFlow.catch((e) => {
-      if (!isFlowCancellationError(e)) {
-        throw e;
-      }
-    });
+    const todosFlow = withSafeCancel(fetchTodos());
     return () => {
       todosFlow.cancel();
       cancelTodosFetch();

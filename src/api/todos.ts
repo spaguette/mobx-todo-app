@@ -29,8 +29,8 @@ export class TodoAPI {
 
   constructor(private baseUrl = BASE_URL) {}
 
-  async fetchAll() {
-    return fetch(this.baseUrl)
+  async fetchAll(signal?: AbortSignal) {
+    return fetch(this.baseUrl, { signal })
       .then(handleFetchError)
       .then((res) => res.json())
       .then(TodoAPI.decodeTodos);
