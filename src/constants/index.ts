@@ -3,4 +3,5 @@ export enum RequestState {
   "LOADING",
   "ERROR",
   "SUCCESS",
+  "CANCELLED",
 }

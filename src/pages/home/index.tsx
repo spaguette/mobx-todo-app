@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import { TodoListController } from "./TodoList";
 import { InputController } from "./TodoInput";
 

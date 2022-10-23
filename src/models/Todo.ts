@@ -26,7 +26,7 @@ export class Todo implements ITodoData {
   done?: boolean;
 
   constructor({ id, text, done = false }: ITodoData) {
-    makeAutoObservable(this);
+    makeAutoObservable(this, {}, { autoBind: true });
     this.id = id;
     this.text = text;
     this.done = done;
@@ -81,6 +81,9 @@ export class TodoStore {
   });
 
   fetchTodos = flow(function* (this: TodoStore) {
+    if (this.state === RequestState.LOADING) {
+      return;
+    }
     this.state = RequestState.LOADING;
     try {
       const todosArr = yield* toGenerator(todoApi.fetchAll());
@@ -91,6 +94,10 @@ export class TodoStore {
       this.state = RequestState.ERROR;
     }
   });
+
+  cancelTodosFetch() {
+    this.state = RequestState.CANCELLED;
+  }
 }
 
 export const todoStore = new TodoStore();

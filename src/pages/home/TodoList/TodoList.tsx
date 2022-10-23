@@ -1,4 +1,5 @@
-import React, { FC } from "react";
+import { observer } from "mobx-react-lite";
+import { FC } from "react";
 import TodoItem from "../../../components/TodoItem";
 import type { Todo } from "../../../models/Todo";
 
@@ -7,7 +8,7 @@ export type TodoListProps = {
   onTodoDelete: (todoId: string) => void;
 };
 
-export const TodoList: FC<TodoListProps> = ({ todoValues, onTodoDelete }) => (
+const TodoList: FC<TodoListProps> = ({ todoValues, onTodoDelete }) => (
   <ul data-testid="todo-list">
     {todoValues.map((todo) => (
       <li key={todo.id}>
@@ -16,3 +17,5 @@ export const TodoList: FC<TodoListProps> = ({ todoValues, onTodoDelete }) => (
     ))}
   </ul>
 );
+
+export default observer(TodoList);

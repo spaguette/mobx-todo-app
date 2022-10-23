@@ -8,22 +8,16 @@ export type TodoItemProps = {
 };
 
 const TodoItem: FC<TodoItemProps> = ({ todo, onDelete }) => {
-  const handleDeleteClick = useCallback(() => {
-    onDelete(todo.id);
-  }, [onDelete, todo]);
+  const { id } = todo;
 
-  const handleTodoToggle = useCallback(() => {
-    todo.toggle();
-  }, [todo]);
+  const handleDeleteClick = useCallback(() => {
+    onDelete(id);
+  }, [onDelete, id]);
 
   return (
     <div style={{ display: "inline" }}>
       <p>
-        <input
-          type="checkbox"
-          checked={todo.done}
-          onChange={handleTodoToggle}
-        />
+        <input type="checkbox" checked={todo.done} onChange={todo.toggle} />
         {todo.text}
         <button onClick={handleDeleteClick}>Delete</button>
       </p>
