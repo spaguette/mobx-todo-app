@@ -1,7 +1,7 @@
 import * as yup from "yup";
 import type { ITodoData } from "../models/Todo";
 
-const BASE_URL = "https://61ab99db264ec200176d4283.mockapi.io/api/v1/todos";
+export const BASE_URL = "https://61ab99db264ec200176d4283.mockapi.io/api/v1/todos";
 
 const handleFetchError = (res: any) => {
   if (res.status >= 300) {

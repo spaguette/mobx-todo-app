@@ -1,37 +1,46 @@
-import fetchMock from "jest-fetch-mock";
-import { render, screen } from "../../../utils/testUtils";
-import { TodoListController } from ".";
+import { render, screen } from '../../../utils/testUtils';
+import { TodoListController } from '.';
+import React from 'react';
+import { vi } from 'vitest';
+import { server, rest } from '../../../utils/server';
+import { BASE_URL } from '../../../api/todos';
 
-fetchMock.enableMocks();
+const mockTodo = { id: '1', text: 'Test 1' };
 
-const mockTodo = { id: "1", text: "Test 1" };
-
-describe("pages/home/TodoList/TodoListController", () => {
+describe('pages/home/TodoList/TodoListController', () => {
   beforeAll(() => {
-    console.error = jest.fn();
+    console.error = vi.fn();
   });
 
-  afterEach(() => {
-    fetchMock.resetMocks();
-  });
-
-  test("renders loader when fetching has started", async () => {
-    fetchMock.mockResponseOnce(JSON.stringify([mockTodo]));
+  test('renders loader when fetching has started', async () => {
+    server.use(
+      rest.get(BASE_URL, async (req, res, ctx) => {
+        return res.once(ctx.status(200), ctx.json([mockTodo]))
+      }),
+    )
     render(<TodoListController />);
-    expect(screen.getByTestId("loader")).toBeTruthy();
+    expect(screen.getByTestId('loader')).toBeTruthy();
   });
 
-  test("renders error when fetching fails", async () => {
-    fetchMock.mockResponseOnce(JSON.stringify("test error"), { status: 500 });
-
-    render(<TodoListController />);
-    await screen.findByTestId("error");
-  });
-
-  test("renders TodoList when fetching succeeds", async () => {
-    fetchMock.mockResponseOnce(JSON.stringify([mockTodo]));
+  test('renders error when fetching fails', async () => {
+    server.use(
+      rest.get(BASE_URL, async (req, res, ctx) => {
+        return res.once(ctx.status(500), ctx.json({message: "test error" }))
+      }),
+    )
 
     render(<TodoListController />);
-    await screen.findByTestId("todo-list");
+    await screen.findByTestId('error');
+  });
+
+  test('renders TodoList when fetching succeeds', async () => {
+    server.use(
+      rest.get(BASE_URL, async (req, res, ctx) => {
+        return res.once(ctx.status(200), ctx.json([mockTodo]))
+      }),
+    )
+
+    render(<TodoListController />);
+    await screen.findByTestId('todo-list');
   });
 });

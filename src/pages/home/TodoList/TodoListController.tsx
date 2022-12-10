@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import React, { FC, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { useTodoStore } from "../../../models/Todo";
 import TodoList from "./TodoList";
