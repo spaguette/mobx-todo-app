@@ -1,24 +1,25 @@
-import React, { FC, useCallback } from "react";
-import { observer } from "mobx-react-lite";
-import type { Todo } from "../models/Todo";
+import React, { FC, useCallback } from 'react';
+import { observer } from 'mobx-react-lite';
+import type { ITodoData, Todo } from '../models/Todo';
+import { putTodo, deleteTodo } from '../models/todo-api';
+import { action, toJS } from 'mobx';
 
 export type TodoItemProps = {
   todo: Todo;
-  onDelete: (todoId: string) => void;
 };
 
-const TodoItem: FC<TodoItemProps> = ({ todo, onDelete }) => {
+const TodoItem: FC<TodoItemProps> = ({ todo }) => {
   const { id } = todo;
 
   const handleDeleteClick = useCallback(() => {
-    onDelete(id);
-  }, [onDelete, id]);
+    deleteTodo.mutate(id);
+  }, [id]);
 
   return (
-    <div style={{ display: "inline" }}>
+    <div style={{ display: 'inline' }}>
       <p>
         <input type="checkbox" checked={todo.done} onChange={todo.toggle} />
-        {todo.text}
+        {todo.textDone}
         <button onClick={handleDeleteClick}>Delete</button>
       </p>
     </div>

@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@tanstack/react-query": "^5.52.1",
     "mobx": "^6.6.2",
     "mobx-react-lite": "^3.4.0",
     "nanoid": "^3.3.4",
