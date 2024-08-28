@@ -10,22 +10,28 @@ const todoApi = new TodoAPI();
 
 const TODO_QUERY_KEY = ['todos'];
 
-export const todoListQuery = new MobxQuery({
-  queryKey: TODO_QUERY_KEY,
-  queryFn: async () => {
-    const res = await todoApi.fetchAll();
-    return res.map((todoData) => new Todo(todoData));
-  },
-});
+export const todoListQuery = new MobxQuery(
+  () => ({
+    queryKey: TODO_QUERY_KEY,
+    queryFn: async () => {
+      const res = await todoApi.fetchAll();
+      return res.map((todoData) => new Todo(todoData));
+    },
+  }),
+  queryClient,
+);
 
 export const createTodoItemQuery = (id: string) =>
-  new MobxQuery({
-    queryKey: [...TODO_QUERY_KEY, id],
-    queryFn: async () => {
-      const res = await todoApi.fetchOne(id);
-      return new Todo(res);
-    },
-  });
+  new MobxQuery(
+    () => ({
+      queryKey: [...TODO_QUERY_KEY, id],
+      queryFn: async () => {
+        const res = await todoApi.fetchOne(id);
+        return new Todo(res);
+      },
+    }),
+    queryClient,
+  );
 
 export const deleteTodo = new MobxMutation({
   mutationFn: async (id: string) => todoApi.delete(id),

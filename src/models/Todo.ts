@@ -20,9 +20,9 @@ export class Todo implements ITodoData {
     this.done = done;
   }
 
-  toggle() {
+  toggle = () => {
     putTodo.mutate({ ...this, done: !this.done });
-  }
+  };
 
   get textDone() {
     return this.text + (this.done ? ' (done)' : '');
@@ -31,21 +31,23 @@ export class Todo implements ITodoData {
 
 export class TodoStore {
   get todoResponse() {
-    return todoListQuery.query();
+    return todoListQuery.result;
   }
 
   todoItemQueries = new Map<string, ReturnType<typeof createTodoItemQuery>>();
 
   getTodo(id: string) {
+    if (!this.todoItemQueries.has(id)) {
+      this.todoItemQueries.set(id, createTodoItemQuery(id));
+    }
+
     const query = this.todoItemQueries.get(id) ?? createTodoItemQuery(id);
 
-    return query.query({
-      queryKey: ['todos', id],
-    });
+    return query.result;
   }
 
   constructor() {
-    makeAutoObservable(this, undefined, { autoBind: true });
+    makeAutoObservable(this, { todoItemQueries: false }, { autoBind: true });
   }
 }
 
