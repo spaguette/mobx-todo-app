@@ -1,8 +1,7 @@
 import React, { FC, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
-import type { ITodoData, Todo } from '../models/Todo';
-import { putTodo, deleteTodo } from '../models/todo-api';
-import { action, toJS } from 'mobx';
+import type { Todo } from '../models/Todo';
+import { deleteTodo } from '../models/todo-api';
 
 export type TodoItemProps = {
   todo: Todo;

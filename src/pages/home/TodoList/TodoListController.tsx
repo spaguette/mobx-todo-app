@@ -7,6 +7,10 @@ const TodoListController: FC = () => {
   const store = useTodoStore();
   const { data, isLoading, isError } = store.todoResponse;
 
+  const { data: data1 } = store.getTodo('23');
+  const { data: data2 } = store.getTodo('24');
+  console.log(data1, data2);
+
   if (isLoading) {
     return <div data-testid="loader">LOADING...</div>;
   }

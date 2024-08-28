@@ -4,6 +4,7 @@ import { MobxMutation } from '../query/mobx-mutation';
 import { queryClient } from '../query/mobx-query-provider';
 import { MobxQuery } from '../query/query';
 import { ITodoData, Todo } from './Todo';
+import { update } from 'ramda';
 
 const todoApi = new TodoAPI();
 
@@ -16,6 +17,15 @@ export const todoListQuery = new MobxQuery({
     return res.map((todoData) => new Todo(todoData));
   },
 });
+
+export const createTodoItemQuery = (id: string) =>
+  new MobxQuery({
+    queryKey: [...TODO_QUERY_KEY, id],
+    queryFn: async () => {
+      const res = await todoApi.fetchOne(id);
+      return new Todo(res);
+    },
+  });
 
 export const deleteTodo = new MobxMutation({
   mutationFn: async (id: string) => todoApi.delete(id),
@@ -39,9 +49,7 @@ export const putTodo = new MobxMutation({
       TODO_QUERY_KEY,
       action((old: IObservableArray<Todo>) => {
         const index = old.findIndex((t) => t.id === newTodo.id);
-        // TODO: this should actually be immutable to follow React-Query's pattern
-        old.splice(index, 1, new Todo(newTodo));
-        return old;
+        return update(index, new Todo(newTodo), old);
       }),
     );
 
@@ -57,9 +65,7 @@ export const putTodo = new MobxMutation({
       TODO_QUERY_KEY,
       action((old: IObservableArray<Todo>) => {
         const index = old.findIndex((t) => t.id === newTodo.id);
-        // TODO: this should actually be immutable to follow React-Query's pattern
-        old.splice(index, 1, new Todo(newTodo));
-        return old;
+        return update(index, new Todo(newTodo), old);
       }),
     );
   },
@@ -97,8 +103,7 @@ export const createTodo = new MobxMutation({
         if (index === -1) {
           return old;
         }
-        old[index] = new Todo(newTodo);
-        return old;
+        return update(index, new Todo(newTodo), old);
       }),
     );
   },
